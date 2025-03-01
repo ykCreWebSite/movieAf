@@ -1,167 +1,344 @@
-# Contentful手動設定手順
+# Contentful詳細セットアップ手順
 
-## 1. アカウント作成手順
+## 1. 初期設定
 
-1. ブラウザで https://www.contentful.com/sign-up/ にアクセス
-2. 以下の情報を入力：
-   - メールアドレス: yuki.af0416@gmail.com
-   - パスワード: （任意の安全なパスワード）
-   - 組織名: MovieAF
-
-## 2. スペースの作成
-
-1. ログイン後、ダッシュボードから「Create space」をクリック
-2. 以下の設定を選択：
+### 1.1 アカウント作成とスペース設定
+1. https://www.contentful.com/sign-up/ にアクセス
+2. メールアドレス: yuki.af0416@gmail.com で登録
+3. 「Create new space」を選択
    - Space name: movieaf
    - Type: Empty space
    - Plan: Free
-3. 「Confirm and create」をクリック
 
-## 3. コンテンツモデルの作成
+### 1.2 基本設定
+1. Settings → Locales
+   - Add locale: Japanese (ja-JP)
+   - Set as default locale
+2. Settings → Space settings
+   - Default preview URL: http://localhost:3000
 
-### 3.1 Toolモデル
-1. 左メニューから「Content model」を選択
-2. 「Add content type」をクリック
-3. 基本情報を入力：
+## 2. コンテンツモデルの作成
+
+### 2.1 共通コンポーネント（SEO）の作成
+1. Content model → Add content type
+   ```
+   Name: SEO
+   API identifier: seo
+   Description: SEO関連の設定
+   ```
+
+2. フィールドの追加
+   ```
+   Field name: Meta Title
+   API ID: metaTitle
+   Type: Short text
+   Required: Yes
+   Character limit: 60
+   Help text: 検索結果に表示されるタイトル（60文字以内）
+   ```
+
+   ```
+   Field name: Meta Description
+   API ID: metaDescription
+   Type: Long text
+   Required: Yes
+   Character limit: 160
+   Help text: 検索結果に表示される説明文（160文字以内）
+   ```
+
+   ```
+   Field name: OG Image
+   API ID: ogImage
+   Type: Media
+   Required: Yes
+   Accept only: Images
+   Help text: SNSでシェアされた際に表示される画像（1200x630px推奨）
+   ```
+
+### 2.2 ツール情報（Tool）の作成
+1. Add content type
    ```
    Name: Tool
    API identifier: tool
    Description: 動画ダウンロードツールの情報
    ```
 
-4. 以下のフィールドを追加：
+2. 基本情報フィールド
+   ```
+   Field name: Name
+   API ID: name
+   Type: Short text
+   Required: Yes
+   Character limit: 100
+   Help text: ツールの表示名
+   ```
 
-| フィールド名 | タイプ | 必須 | 設定 |
-|------------|-------|------|------|
-| name | Short text | Yes | - |
-| slug | Short text | Yes | Unique: Yes<br>Pattern: ^[a-z0-9-]+$ |
-| description | Long text | Yes | - |
-| type | Short text | Yes | Validation: Matches pattern ^(desktop\|online\|browser)$ |
-| benefits | Rich text | Yes | - |
-| drawbacks | Rich text | Yes | - |
-| affiliateLink | Short text | Yes | Validation: URL |
-| image | Media | Yes | Accept: Images only |
+   ```
+   Field name: Slug
+   API ID: slug
+   Type: Short text
+   Required: Yes
+   Unique: Yes
+   Pattern: ^[a-z0-9-]+$
+   Character limit: 50
+   Help text: URLで使用される識別子（小文字、数字、ハイフンのみ）
+   ```
 
-### 3.2 Guideモデル
-1. 「Add content type」をクリック
-2. 基本情報を入力：
+   ```
+   Field name: Description
+   API ID: description
+   Type: Long text
+   Required: Yes
+   Character limit: 500
+   Help text: ツールの概要説明
+   ```
+
+3. 詳細情報フィールド
+   ```
+   Field name: Type
+   API ID: type
+   Type: Short text
+   Required: Yes
+   Validation: Matches pattern ^(desktop|online|browser)$
+   Help text: ツールの種類（desktop/online/browser）
+   ```
+
+   ```
+   Field name: Benefits
+   API ID: benefits
+   Type: Rich text
+   Required: Yes
+   Allowed node types:
+     - Heading 2
+     - Heading 3
+     - Paragraph
+     - Unordered list
+     - Ordered list
+   Help text: ツールのメリット（箇条書き推奨）
+   ```
+
+   ```
+   Field name: Drawbacks
+   API ID: drawbacks
+   Type: Rich text
+   Required: Yes
+   Allowed node types: [同上]
+   Help text: ツールのデメリット（箇条書き推奨）
+   ```
+
+4. メディアとリンク
+   ```
+   Field name: Image
+   API ID: image
+   Type: Media
+   Required: Yes
+   Accept only: Images
+   Help text: ツールのスクリーンショット（1200x800px推奨）
+   ```
+
+   ```
+   Field name: Affiliate Link
+   API ID: affiliateLink
+   Type: Short text
+   Required: Yes
+   Pattern: ^https?://.*$
+   Help text: アフィリエイトリンクのURL
+   ```
+
+5. SEO設定
+   ```
+   Field name: SEO
+   API ID: seo
+   Type: Reference
+   Required: Yes
+   Accept only: SEO
+   Number of references: 1
+   Help text: SEO設定
+   ```
+
+### 2.3 使い方ガイド（Guide）の作成
+1. Add content type
    ```
    Name: Guide
    API identifier: guide
    Description: ツールの使用方法ガイド
    ```
 
-3. 以下のフィールドを追加：
+2. 基本情報フィールド
+   ```
+   Field name: Title
+   API ID: title
+   Type: Short text
+   Required: Yes
+   Character limit: 100
+   Help text: ガイドのタイトル
+   ```
 
-| フィールド名 | タイプ | 必須 | 設定 |
-|------------|-------|------|------|
-| title | Short text | Yes | - |
-| slug | Short text | Yes | Unique: Yes<br>Pattern: ^[a-z0-9-]+$ |
-| tool | Reference | Yes | Accept: Tool only |
-| steps | Rich text | Yes | - |
-| image | Media | Yes | Accept: Images only |
+   ```
+   Field name: Slug
+   API ID: slug
+   Type: Short text
+   Required: Yes
+   Unique: Yes
+   Pattern: ^[a-z0-9-]+$
+   Character limit: 50
+   Help text: URLで使用される識別子（小文字、数字、ハイフンのみ）
+   ```
 
-## 4. APIキーの取得
+3. コンテンツフィールド
+   ```
+   Field name: Steps
+   API ID: steps
+   Type: Rich text
+   Required: Yes
+   Allowed node types:
+     - Heading 2
+     - Heading 3
+     - Paragraph
+     - Unordered list
+     - Ordered list
+     - Image
+   Help text: 使用手順の詳細説明
+   ```
 
-1. 左メニューから「Settings」→「API keys」を選択
-2. 「Add API key」をクリック
-3. 名前を入力：「MovieAF Website」
-4. 作成されたキーから以下の情報をコピー：
+4. 関連情報
+   ```
+   Field name: Tool
+   API ID: tool
+   Type: Reference
+   Required: Yes
+   Accept only: Tool
+   Number of references: 1
+   Help text: 対象となるツール
+   ```
+
+   ```
+   Field name: Image
+   API ID: image
+   Type: Media
+   Required: Yes
+   Accept only: Images
+   Help text: 手順説明用のスクリーンショット
+   ```
+
+5. SEO設定
+   ```
+   Field name: SEO
+   API ID: seo
+   Type: Reference
+   Required: Yes
+   Accept only: SEO
+   Number of references: 1
+   Help text: SEO設定
+   ```
+
+## 3. APIキーの設定
+
+### 3.1 APIキーの作成
+1. Settings → API keys → Add API key
+   ```
+   Name: MovieAF Website
+   Description: Next.jsウェブサイト用
+   ```
+
+2. 以下の情報をメモ
    - Space ID
    - Content Delivery API - access token
+   - Content Preview API - access token
 
-## 5. 環境変数の設定
+### 3.2 環境変数の設定
+1. プロジェクトルートの`.env.local`を編集
+   ```
+   CONTENTFUL_SPACE_ID=【Space ID】
+   CONTENTFUL_ACCESS_TOKEN=【Content Delivery API - access token】
+   CONTENTFUL_PREVIEW_TOKEN=【Content Preview API - access token】
+   ```
 
-1. プロジェクトの`.env.local`ファイルを開く
-2. 以下の情報を追加：
-```
-CONTENTFUL_SPACE_ID=【コピーしたSpace ID】
-CONTENTFUL_ACCESS_TOKEN=【コピーしたContent Delivery API - access token】
-```
+## 4. 権限設定
 
-## 6. サンプルコンテンツの作成
+### 4.1 ロールの作成
+1. Settings → Roles → Add role
+   ```
+   Name: Content Editor
+   Description: コンテンツ編集者
+   Permissions:
+     - Read content
+     - Create and edit content
+     - Publish content
+     - Manage assets
+   ```
 
-### 6.1 VideoProc Converterの登録
-1. 「Content」タブを選択
-2. 「Add entry」→「Tool」を選択
-3. 以下の情報を入力：
-```
-Name: VideoProc Converter
-Slug: videoprocconverter
-Type: desktop
-Description: 高性能な動画ダウンロード・変換ソフト。4K/8K動画対応、高速処理が特徴。
+### 4.2 ユーザーの招待
+1. Settings → Users → Add user
+   - メールアドレスを入力
+   - ロールを選択
 
-Benefits:
-• 4K/8K動画の高品質ダウンロードに対応
-• GPUハードウェアアクセラレーションによる高速処理
-• 200以上の動画サイトに対応
-• 動画編集・変換機能を搭載
+## 5. メディア管理設定
 
-Drawbacks:
-• 有料ソフトウェア（永続ライセンス）
-• インストールが必要
+### 5.1 アセット設定
+1. Settings → Media → Edit settings
+   ```
+   Default upload directory: /images
+   Auto-process files: Yes
+   ```
 
-AffiliateLink: https://www.videoproc.com/download/videoproc-converter.exe
-```
+### 5.2 画像最適化設定
+1. Settings → Media → Image handling
+   ```
+   Enable automatic image optimization: Yes
+   Default quality: 80
+   Max file size: 2MB
+   ```
 
-### 6.2 使い方ガイドの登録
-1. 「Add entry」→「Guide」を選択
-2. 以下の情報を入力：
-```
-Title: VideoProc Converterの使い方ガイド
-Slug: videoprocconverter-guide
-Tool: VideoProc Converter（参照選択）
+## 6. プレビュー設定
 
-Steps:
-## 1. ダウンロードとインストール
-公式サイトからソフトウェアをダウンロードし、インストーラーを実行します。
+### 6.1 プレビューの設定
+1. Settings → Content preview
+   ```
+   Entry preview:
+     - Name: Development
+     - URL: http://localhost:3000/api/preview?secret=【プレビューシークレット】&slug={entry.fields.slug}
+   ```
 
-## 2. 動画のダウンロード
-1. 「動画のダウンロード」タブを選択
-2. URLを貼り付け
-3. 解析ボタンをクリック
-4. 品質を選択してダウンロード開始
+## 7. バックアップ設定
 
-## 3. 動画の変換（オプション）
-1. 「動画変換」タブを選択
-2. 変換したい動画をドラッグ＆ドロップ
-3. 出力形式と品質を選択
-4. 変換開始をクリック
-```
+### 7.1 定期エクスポートの設定
+1. Settings → Space settings → Content export
+   ```
+   Export type: Full
+   Include assets: Yes
+   Export format: JSON
+   ```
 
-## 7. 動作確認
+## 8. 動作確認
 
-1. 開発サーバーを再起動：
-```bash
-npm run dev
-```
+### 8.1 コンテンツの作成
+1. サンプルコンテンツの作成
+   - SEO情報の作成
+   - ツール情報の作成
+   - ガイド情報の作成
 
-2. ブラウザで http://localhost:3000 にアクセス
+### 8.2 APIテスト
+1. GraphiQL Explorerでクエリのテスト
+2. Postmanでエンドポイントのテスト
 
-3. 以下を確認：
-   - トップページのツール一覧表示
-   - ツール詳細ページの表示
-   - 使い方ガイドの表示
-   - 画像の表示
-   - リンクの動作
+### 8.3 プレビューの確認
+1. エントリーのプレビュー
+2. 下書き状態の確認
 
 ## トラブルシューティング
 
-### APIエラーが発生する場合
-1. 環境変数が正しく設定されているか確認
-2. `.env.local`ファイルが正しい場所にあるか確認
-3. 開発サーバーを再起動
+### APIエラー
+1. APIキーの確認
+2. 環境変数の確認
+3. コンテンツモデルの確認
 
-### 画像が表示されない場合
-1. Contentfulで画像が公開されているか確認
-2. `next.config.js`の設定を確認：
-```javascript
-images: {
-  domains: ['images.ctfassets.net'],
-}
-```
+### プレビューエラー
+1. プレビューURLの確認
+2. シークレットの確認
+3. ルーティングの確認
 
-### コンテンツが表示されない場合
-1. Contentfulでエントリーが公開されているか確認
-2. APIキーの権限を確認
-3. コンソールでエラーメッセージを確認
+### メディアエラー
+1. ファイルサイズの確認
+2. 画像フォーマットの確認
+3. パーミッションの確認

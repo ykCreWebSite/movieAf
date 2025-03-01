@@ -15,21 +15,21 @@ const tools: ToolCard[] = [
     name: 'VideoProc Converter',
     type: 'デスクトップソフト',
     description: '高性能な動画ダウンロード・変換ソフト。4K動画対応、高速処理が特徴。',
-    imageUrl: '/images/videoProc.png',
+    imageUrl: 'https://placehold.co/600x400?text=VideoProc+Converter',
   },
   {
     id: 'savefrom',
     name: 'SaveFrom.net',
     type: 'オンラインサービス',
     description: 'ブラウザから直接動画をダウンロード。インストール不要で手軽に利用可能。',
-    imageUrl: '/images/savefrom.png',
+    imageUrl: 'https://placehold.co/600x400?text=SaveFrom.net',
   },
   {
     id: 'downloadhelper',
     name: 'Video DownloadHelper',
     type: 'ブラウザ拡張機能',
     description: 'ブラウザに統合された使いやすい動画ダウンロード機能を提供。',
-    imageUrl: '/images/downloadhelper.png',
+    imageUrl: 'https://placehold.co/600x400?text=Video+DownloadHelper',
   },
 ];
 
@@ -58,6 +58,7 @@ export default function Home() {
                 alt={tool.name}
                 fill
                 className="object-contain"
+                unoptimized
               />
             </div>
             <h2 className="text-2xl font-bold mb-2">{tool.name}</h2>
